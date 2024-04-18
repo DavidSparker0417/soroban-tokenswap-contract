@@ -4,9 +4,7 @@ use crate::storage_types::{ FEE_DECIMALS, /* INSTANCE_LIFETIME_THRESHOLD, INSTAN
 };
 
 use crate::admin::{ 
-    has_administrator, 
     read_administrator, 
-    write_administrator 
 };
 
 pub fn fee_check(e: &Env) -> bool {
