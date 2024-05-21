@@ -1,0 +1,38 @@
+{
+  "developmentEnv": {
+    "1.rustup": "curl https://sh.rustup.rs -sSf | sh",
+    "2. ": "source '$HOME/.cargo/env'",
+    "3. wasm32": "rustup target add wasm32-unknown-unknown",
+    "4. build-essential": "sudo apt install build-essential",
+    "5. install soroban-cli": "cargo install --locked soroban-cli",
+    "6. network": "soroban network add --global Futurenet --rpc-url https://rpc-futurenet.stellar.org --network-passphrase 'Test SDF Future Network ; October 2022'",
+    "7. address": "soroban keys generate --global admin --network Futurenet",
+    "ref": "https://developers.stellar.org/docs/smart-contracts/getting-started/setup"
+  },
+  "stkn": {
+    "start": "cd stkn",
+    "build": "soroban contract build",
+    "deploy": {
+      "cmd": [
+        "soroban config identity fund $(soroban keys address admin) --network Futurenet",
+        "soroban contract deploy --wasm target/wasm32-unknown-unknown/release/soroban_token_contract.wasm  --source admin --network Futurenet > ../stkn-id"
+      ],
+      "gas": {
+        "prev": "",
+        "after": "",
+        "consumed": ""
+      }
+    },
+    "initialize": {
+      "cmd": "soroban contract invoke --id $(cat ../stkn-id) --source admin --network Futurenet -- initialize --admin $(soroban keys address admin) --decimal 4 --symbol STKN --name 'SendToken'",
+      "gas": {
+        "prev": "",
+        "after": "",
+        "consumed": ""
+      }
+    }
+  },
+  "swap-contract": {
+
+  }
+}
