@@ -32,7 +32,8 @@
     },
     "approve": {
       "approve-to-contract": "soroban contract invoke --id $(cat ../stkn-id) --source offeror --network Mainnet -- approve --from $(soroban keys address offeror) --spender $(cat ../contract-id) --amount 100000000 --expiration_ledger 2000000",
-      "confirm": "soroban contract invoke --id $(cat ../stkn-id) --source offeror --network Mainnet -- allowance --from $(soroban keys address offeror) --spender $(cat ../contract-id)"
+      "confirm": "soroban contract invoke --id $(cat ../stkn-id) --source offeror --network Mainnet -- allowance --from $(soroban keys address offeror) --spender $(cat ../contract-id)",
+      "getLatestLedger": "https://horizon.stellar.org"
     },
     "deployed": [
       "CAX64KHXAEDPYEN53BMOOFM4NHHUQHQMXZHSC3LGGRDPK4MJIGPMOPOS"
