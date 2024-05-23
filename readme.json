@@ -9,6 +9,12 @@
     "7. address": "soroban keys generate --global admin --network Futurenet",
     "ref": "https://developers.stellar.org/docs/smart-contracts/getting-started/setup"
   },
+  "wallets": {
+    "admin": "soroban keys generate --global -s admin --network Futurenet",
+    "offeror": "soroban keys generate --global -s offeror --network Futurenet",
+    "acceptor": "soroban keys generate --global -s acceptor --network Futurenet",
+    "fee_acc": "soroban keys generate --global -s fee_acc --network Futurenet"
+  },
   "stkn": {
     "start": "cd stkn",
     "build": "soroban contract build",
@@ -16,23 +22,55 @@
       "cmd": [
         "soroban config identity fund $(soroban keys address admin) --network Futurenet",
         "soroban contract deploy --wasm target/wasm32-unknown-unknown/release/soroban_token_contract.wasm  --source admin --network Futurenet > ../stkn-id"
-      ],
-      "gas": {
-        "prev": "",
-        "after": "",
-        "consumed": ""
-      }
+      ]
     },
     "initialize": {
       "cmd": "soroban contract invoke --id $(cat ../stkn-id) --source admin --network Futurenet -- initialize --admin $(soroban keys address admin) --decimal 4 --symbol STKN --name 'SendToken'",
-      "gas": {
-        "prev": "",
-        "after": "",
-        "consumed": ""
-      }
-    }
+    },
+    "mint": {
+      "to-offeror": "soroban contract invoke --id $(cat ../stkn-id) --source admin --network Futurenet -- mint --to $(soroban keys address offeror) --amount 10000000000"
+    },
+    "approve": {
+      "approve-to-contract": "soroban contract invoke --id $(cat ../stkn-id) --source offeror --network Mainnet -- approve --from $(soroban keys address offeror) --spender $(cat ../contract-id) --amount 100000000 --expiration_ledger 2000000",
+      "confirm": "soroban contract invoke --id $(cat ../stkn-id) --source offeror --network Mainnet -- allowance --from $(soroban keys address offeror) --spender $(cat ../contract-id)"
+    },
+    "deployed": [
+      "CAX64KHXAEDPYEN53BMOOFM4NHHUQHQMXZHSC3LGGRDPK4MJIGPMOPOS"
+    ],
+    "NGNC": "CBYFV4W2LTMXYZ3XWFX5BK2BY255DU2DSXNAE4FJ5A5VYUWGIBJDOIGG"
+  },
+  "rtkn": {
+    "start": "cd rtkn",
+    "build": "soroban contract build",
+    "deploy": {
+      "cmd": [
+        "soroban config identity fund $(soroban keys address admin) --network Futurenet",
+        "soroban contract deploy --wasm target/wasm32-unknown-unknown/release/soroban_token_contract.wasm  --source admin --network Futurenet > ../rtkn-id"
+      ],
+      "deployed": "CDCLM36CAZX5PN5WBC2GYPYFP5LK75OXR3UANYCWCGL3DWZLAXWNGKID"
+    },
+    "initialize": {
+      "cmd": "soroban contract invoke --id $(cat ../rtkn-id) --source admin --network Futurenet -- initialize --admin $(soroban keys address admin) --decimal 4 --symbol RTKN --name 'DV RecvToken'"
+    },
+    "mint": {
+      "to-acceptor": "soroban contract invoke --id $(cat ../rtkn-id) --source admin --network Futurenet -- mint --to $(soroban keys address acceptor) --amount 10000000000"
+    },
+    "USDC": "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75"
   },
   "swap-contract": {
-
+    "deploy": "soroban contract deploy --wasm target/wasm32-unknown-unknown/release/soroban_token_exchange_contract.wasm --source admin --network Mainnet",
+    "deployed": [
+      "CBOC24RLZHETOADX2KHKO5WWV4K6E3DKX6T5SUUPKJXI6JC2SSX47BUI",
+      "CACROVBZUYBKQ66MR4WTHICQEAQSRQRAUBLOKIM2XE22NFIKAMBYZFNE"
+    ],
+    "initialize": "soroban contract invoke --id $(cat ../contract-id) --source admin --network Mainnet -- initialize --admin $(soroban keys address admin)",
+    "binding-for-frontend": "soroban contract bindings typescript --wasm target/wasm32-unknown-unknown/release/soroban_token_exchange_contract.wasm --overwrite --output-dir ../../token-swap --contract-id $(cat ../contract-id) --rpc-url https://soroban-mainnet.nownodes.io --network-passphrase 'Public Global Stellar Network ; September 2015'",
+    "integration-with-frontend": [
+      "1. copy token-swap directory to frontend project directory",
+      "2. goto frontend directory"
+    ]
+  },
+  "setting-by-cli": {
+    "set_fee": "soroban contract invoke --id $(cat ../contract-id) --network Mainnet --source admin -- set_fee --fee_rate 25 --fee_wallet $(soroban keys address fee_acc)"
   }
 }
